@@ -3,33 +3,32 @@
 #10.10.22
 #v.: 1.0
 
-
-from ast import Break, Continue
+from ast import Continue
 from compressor import compressor
 from compressor import name_video
 import vimeo
-import json
+from os import getenv
 from os import path
+from dotenv import load_dotenv
 
-
-
+load_dotenv() 
+API_TOKEN =getenv("API_TOKEN")
+API_KEY = getenv("API_KEY")
+API_SECRET = getenv("API_SECRET")
 
 client = vimeo.VimeoClient(
-    token= '466f3f4a6f1f365337e6b1f726bced5e',
-    key='a9f8984a831d1dd56f76a95276f89dd93d8c81dc',
-    secret='o0t6wz5saAxy8spF6kX3eY6x5ImWg+HC0CCc7HAYZpu44j3lkHBSdbubIwCWFM1hRQ1WUA02igzEnMMTBTv+8LsB9ki+0TmjGDVf9sUwrzzI/rSIQuRkPg/Y956xKo7I'
+    token= API_TOKEN,
+    key=API_KEY,
+    secret= API_SECRET
 )
 
 
 url = 'https://api.vimeo.com/me/videos'
-
-response = client.get('https://api.vimeo.com/videos/611934332?fields=transcode.status').json()
-
-print(response)
-
-r = client.get(url)
 caminho = 'C:\\xampp\\htdocs\\API_Vimeo'
 
+
+
+r = client.get(url)
 
 
 if r.status_code == 200:
@@ -49,10 +48,12 @@ caminho_video = path.join(caminho, name_video)
 print(caminho_video)
 
 
-
+#start Uploading in Vimeo API
 try:  
 
     uri = client.upload(caminho_video, data = {'name': name_video, 'description' : 'Modelo de teste'})
+    
+    #Get the Video ID on Vimeo
     print(uri)
 
 except vimeo.exceptions.VideoUploadFailure as e:
@@ -60,3 +61,25 @@ except vimeo.exceptions.VideoUploadFailure as e:
     print('Error')
 
 
+vimeo_url = 'https://api.vimeo.com'
+
+uri = vimeo_url + uri
+
+whitelist = uri +'/privacy/domains/medway.com.br'
+
+client.put(whitelist)
+
+list_allowed = uri + '/privacy/domains'
+print(client.get(list_allowed).json())
+
+#Privacy.set_embed(uri)
+#set the privacy configuration
+client.patch(uri, data={'privacy': {'view': 'nobody'}})
+
+#Set the  embed configuration
+#Privacy.set_privacy(uri)
+client.patch(uri, data={'privacy':{'embed': 'whitelist'}})
+
+privacy_list = uri+'?fields=privacy.values'
+
+print (client.get(privacy_list).json())
