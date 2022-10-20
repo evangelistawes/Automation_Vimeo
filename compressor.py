@@ -22,10 +22,9 @@ def compressor(clip):
         print("File not found ")
 
     clip = clip.resize ((1920,1080))
-    clip = clip.resize(0.8)
-    clip.write_videofile(name_video)
+    clip.write_videofile(name_video, codec = 'libx264',audio_bitrate = '50k', preset = 'veryslow')
 
 
-
+clip = compressor(clip)
     
 

@@ -10,11 +10,15 @@ import vimeo
 from os import getenv
 from os import path
 from dotenv import load_dotenv
+from compressor import clip
+
 
 load_dotenv() 
 API_TOKEN =getenv("API_TOKEN")
 API_KEY = getenv("API_KEY")
 API_SECRET = getenv("API_SECRET")
+
+
 
 client = vimeo.VimeoClient(
     token= API_TOKEN,
@@ -39,7 +43,7 @@ else:
     exit
 
 
-clip = 'test.mp4'
+
 clip = compressor(clip)
 
 print('Uploading: %s' % name_video)
@@ -72,12 +76,12 @@ client.put(whitelist)
 list_allowed = uri + '/privacy/domains'
 print(client.get(list_allowed).json())
 
-#Privacy.set_embed(uri)
+
 #set the privacy configuration
 client.patch(uri, data={'privacy': {'view': 'nobody'}})
 
 #Set the  embed configuration
-#Privacy.set_privacy(uri)
+
 client.patch(uri, data={'privacy':{'embed': 'whitelist'}})
 
 privacy_list = uri+'?fields=privacy.values'
